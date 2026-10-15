@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { connectDB } from './config/db.js';
 
 const app = express();
 
@@ -91,7 +92,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Health Check API
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  if (mongoose.connection.readyState === 0) {
+    await connectDB().catch(() => {});
+  }
+
   const dbStatus = mongoose.connection.readyState;
   const dbStatusMap = {
     0: 'DISCONNECTED',
