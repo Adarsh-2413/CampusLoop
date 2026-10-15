@@ -4,6 +4,8 @@ import { connectDB } from './config/db.js';
 
 dotenv.config();
 
+// Auto-reloaded with persistent MongoDB Atlas configuration
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
