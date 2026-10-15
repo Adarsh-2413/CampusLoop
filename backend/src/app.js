@@ -32,17 +32,28 @@ app.use(
 );
 
 // CORS configuration supporting credentials and client origin
+const configuredClientUrls = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((u) => u.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  ...configuredClientUrls,
+  'http://localhost:5173',
   'http://localhost:4173',
-  'http://localhost:5173'
+  'http://127.0.0.1:5173'
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman)
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        (process.env.NODE_ENV !== 'production' && origin.includes('localhost'))
+      ) {
         callback(null, true);
       } else {
         callback(new Error(`Origin ${origin} not permitted by CORS policy`));
