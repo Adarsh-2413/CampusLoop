@@ -3,19 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const connectDB = async () => {
-  const uri = process.env.MONGODB_URI;
+const DEFAULT_MONGODB_URI = 'mongodb+srv://adarshsug24_db_user:VGJhR7pBOfN72zmI@cluster0.rih7zcu.mongodb.net/campusloop?retryWrites=true&w=majority';
 
-  if (!uri) {
-    console.warn('\n================================================================');
-    console.warn('⚠️  MONGODB_URI is not set in backend/.env');
-    console.warn('   The backend server will run in offline/memory mode for health check.');
-    console.warn('   To enable persistent database features, create backend/.env and');
-    console.warn('   add your MongoDB Atlas connection string:');
-    console.warn('   MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.mongodb.net/campusloop');
-    console.warn('================================================================\n');
-    return null;
-  }
+export const connectDB = async () => {
+  const uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI;
 
   try {
     const conn = await mongoose.connect(uri);
@@ -23,9 +14,7 @@ export const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
     return null;
   }
 };
+
